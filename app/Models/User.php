@@ -4,15 +4,17 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Notifications\CustomVerifyEmail;
+use App\Traits\HasUuid;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasUuid;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'avatar',
         'birthday',
         'bio',
+        'is_private',
     ];
 
     /**
@@ -50,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'birthday' => 'date',
+            'is_private' => 'boolean',
         ];
     }
 
@@ -85,5 +89,94 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getAgeAttribute()
     {
         return $this->birthday->age;
+    }
+
+    /**
+     * Get all posts for the user
+     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Get all comments for the user
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Get all likes for the user
+     */
+    public function likes(): HasMany
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    /**
+     * Get users that this user is following
+     */
+    public function following(): HasMany
+    {
+        return $this->hasMany(Follower::class, 'follower_id');
+    }
+
+    /**
+     * Get users that are following this user
+     */
+    public function followers(): HasMany
+    {
+        return $this->hasMany(Follower::class, 'following_id');
+    }
+
+    /**
+     * Check if user is following another user
+     */
+    public function isFollowing(User $user): bool
+    {
+        return $this->following()
+            ->where('following_id', $user->id)
+            ->where('status', 'accepted')
+            ->exists();
+    }
+
+    /**
+     * Check if user has a pending follow request to another user
+     */
+    public function hasPendingFollowRequest(User $user): bool
+    {
+        return $this->following()
+            ->where('following_id', $user->id)
+            ->where('status', 'pending')
+            ->exists();
+    }
+
+    /**
+     * Get number of followers
+     */
+    public function getFollowersCountAttribute(): int
+    {
+        return $this->followers()->where('status', 'accepted')->count();
+    }
+
+    /**
+     * Get number of users being followed
+     */
+    public function getFollowingCountAttribute(): int
+    {
+        return $this->following()->where('status', 'accepted')->count();
+    }
+
+    /**
+     * Get pending follow requests for this user
+     */
+    public function getPendingFollowRequestsAttribute()
+    {
+        return $this->followers()
+            ->where('status', 'pending')
+            ->with('follower')
+            ->get();
     }
 }

@@ -27,9 +27,10 @@ class ProfileController extends Controller
             'name' => ['sometimes', 'string', 'max:255'],
             'bio' => ['sometimes', 'nullable', 'string', 'max:1000'],
             'avatar' => ['sometimes', 'nullable', 'file', 'image', 'max:1024'],
+            'is_private' => ['sometimes', 'boolean'],
         ]);
 
-        $userData = $request->only(['name', 'bio']);
+        $userData = $request->only(['name', 'bio', 'is_private']);
 
         // Handle avatar upload if provided
         if ($request->hasFile('avatar')) {

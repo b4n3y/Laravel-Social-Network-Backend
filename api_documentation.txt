@@ -1,0 +1,538 @@
+Laravel Backend API Documentation
+============================
+
+Base URL: http://localhost:8000/api
+
+Authentication
+-------------
+All protected routes require a Bearer token in the Authorization header:
+Authorization: Bearer <your_token>
+
+1. Authentication Endpoints
+-------------------------
+
+1.1 Register
+POST /register
+Request:
+{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123",
+    "password_confirmation": "password123",
+    "gender": "male",           // optional: male/female
+    "birthday": "1990-01-01",   // optional
+    "bio": "About me..."        // optional
+}
+Response: 201 Created
+{
+    "user": {
+        "id": 1,
+        "name": "John Doe",
+        "email": "john@example.com",
+        "gender": "male",
+        "birthday": "1990-01-01",
+        "bio": "About me...",
+        "avatar_url": "http://localhost:8000/avatars/default-male.svg",
+        "created_at": "2024-02-11T..."
+    }
+}
+
+1.2 Login
+POST /login
+Request:
+{
+    "email": "john@example.com",
+    "password": "password123"
+}
+Response: 200 OK
+{
+    "token": "your_access_token"
+}
+
+1.3 Logout
+POST /logout
+Headers: Authorization Bearer Token
+Response: 204 No Content
+
+1.4 Request Password Reset
+POST /forgot-password
+Request:
+{
+    "email": "john@example.com"
+}
+Response: 200 OK
+{
+    "message": "Password reset link sent"
+}
+
+1.5 Reset Password
+POST /reset-password
+Request:
+{
+    "token": "reset_token",
+    "email": "john@example.com",
+    "password": "newpassword123",
+    "password_confirmation": "newpassword123"
+}
+Response: 200 OK
+{
+    "message": "Password reset successfully"
+}
+
+2. User Profile Endpoints
+------------------------
+
+2.1 Get Profile
+GET /me
+Response: 200 OK
+{
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "gender": "male",
+    "birthday": "1990-01-01",
+    "bio": "About me...",
+    "avatar_url": "http://localhost:8000/storage/avatars/user1.jpg",
+    "is_private": false,
+    "age": 34,
+    "created_at": "2024-02-11T..."
+}
+
+2.2 Update Profile
+PATCH /me
+Request (multipart/form-data):
+{
+    "name": "John Doe Updated",
+    "email": "john.updated@example.com",
+    "gender": "male",
+    "birthday": "1990-01-01",
+    "bio": "Updated bio...",
+    "avatar": [file upload],  // optional
+    "is_private": true        // optional, defaults to false
+}
+Response: 200 OK
+{
+    "message": "Profile updated successfully",
+    "user": {
+        "id": 1,
+        "name": "John Doe Updated",
+        "email": "john.updated@example.com",
+        "gender": "male",
+        "birthday": "1990-01-01",
+        "bio": "Updated bio...",
+        "avatar_url": "http://localhost:8000/storage/avatars/user1.jpg",
+        "is_private": true,
+        "age": 34,
+        "created_at": "2024-02-11T..."
+    }
+}
+
+3. Posts Endpoints
+-----------------
+
+3.1 Get All Posts
+GET /posts
+Response: 200 OK
+{
+    "data": [
+        {
+            "id": 1,
+            "title": "Post Title",
+            "content": "Post content...",
+            "media_type": "image",
+            "media_url": "posts/image1.jpg",
+            "media_full_url": "http://localhost:8000/storage/posts/image1.jpg",
+            "created_at": "2024-02-11T...",
+            "user": {
+                "id": 1,
+                "name": "John Doe"
+            },
+            "comments_count": 5,
+            "likes_count": 10
+        }
+    ],
+    "links": {
+        "first": "http://localhost:8000/api/posts?page=1",
+        "last": "http://localhost:8000/api/posts?page=5",
+        "prev": null,
+        "next": "http://localhost:8000/api/posts?page=2"
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 5,
+        "path": "http://localhost:8000/api/posts",
+        "per_page": 10,
+        "to": 10,
+        "total": 50
+    }
+}
+
+3.2 Create Post
+POST /posts
+Request (multipart/form-data):
+{
+    "title": "New Post Title",
+    "content": "Post content...",  // optional if media is provided
+    "media": [file upload],        // optional, image file max 5MB
+    "is_private": false           // optional, defaults to false
+}
+Response: 201 Created
+{
+    "id": 1,
+    "title": "New Post Title",
+    "content": "Post content...",
+    "media_type": "image",
+    "media_url": "posts/newimage.jpg",
+    "media_full_url": "http://localhost:8000/storage/posts/newimage.jpg",
+    "is_private": false,
+    "created_at": "2024-02-11T...",
+    "user": {
+        "id": 1,
+        "name": "John Doe"
+    }
+}
+
+3.3 Get Single Post
+GET /posts/{id}
+Response: 200 OK
+{
+    "id": 1,
+    "title": "Post Title",
+    "content": "Post content...",
+    "media_type": "image",
+    "media_url": "posts/image1.jpg",
+    "media_full_url": "http://localhost:8000/storage/posts/image1.jpg",
+    "created_at": "2024-02-11T...",
+    "user": {
+        "id": 1,
+        "name": "John Doe"
+    },
+    "comments": [
+        {
+            "id": 1,
+            "content": "Comment text...",
+            "created_at": "2024-02-11T...",
+            "user": {
+                "id": 2,
+                "name": "Jane Doe"
+            }
+        }
+    ],
+    "comments_count": 5,
+    "likes_count": 10
+}
+
+3.4 Update Post
+PUT /posts/{id}
+Request (multipart/form-data):
+{
+    "title": "Updated Title",
+    "content": "Updated content...",  // optional if media is provided
+    "media": [file upload]           // optional, image file max 5MB
+}
+Response: 200 OK
+{
+    // Updated post data
+}
+
+3.5 Delete Post
+DELETE /posts/{id}
+Response: 204 No Content
+
+3.6 Get My Posts
+GET /my-posts
+Response: 200 OK
+{
+    "data": [
+        {
+            "id": 1,
+            "title": "Post Title",
+            "content": "Post content...",
+            "media_type": "image",
+            "media_url": "posts/image1.jpg",
+            "media_full_url": "http://localhost:8000/storage/posts/image1.jpg",
+            "created_at": "2024-02-11T...",
+            "user": {
+                "id": 1,
+                "name": "John Doe"
+            },
+            "comments_count": 5,
+            "likes_count": 10
+        }
+    ],
+    "links": {
+        "first": "http://localhost:8000/api/my-posts?page=1",
+        "last": "http://localhost:8000/api/my-posts?page=5",
+        "prev": null,
+        "next": "http://localhost:8000/api/my-posts?page=2"
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 5,
+        "path": "http://localhost:8000/api/my-posts",
+        "per_page": 10,
+        "to": 10,
+        "total": 50
+    }
+}
+
+3.7 Get User's Posts
+GET /users/{userId}/posts
+Description: Get all posts from a specific user
+Rate Limit: 60 requests per minute
+Response: 200 OK
+{
+    "data": [
+        {
+            "id": 1,
+            "title": "Post Title",
+            "content": "Post content...",
+            "media_type": "image",
+            "media_url": "posts/image1.jpg",
+            "media_full_url": "http://localhost:8000/storage/posts/image1.jpg",
+            "created_at": "2024-02-11T...",
+            "user": {
+                "id": 1,
+                "name": "John Doe"
+            },
+            "comments_count": 5,
+            "likes_count": 10
+        }
+    ],
+    "links": {
+        "first": "http://localhost:8000/api/users/1/posts?page=1",
+        "last": "http://localhost:8000/api/users/1/posts?page=5",
+        "prev": null,
+        "next": "http://localhost:8000/api/users/1/posts?page=2"
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 5,
+        "path": "http://localhost:8000/api/users/1/posts",
+        "per_page": 10,
+        "to": 10,
+        "total": 50
+    }
+}
+
+3.8 Toggle Post Privacy
+PATCH /posts/{id}/toggle-privacy
+Description: Toggle the private status of a post. Only the post owner can toggle privacy.
+Rate Limit: 10 requests per minute
+Response: 200 OK
+{
+    "message": "Post privacy updated successfully",
+    "is_private": true  // or false
+}
+
+4. Comments Endpoints
+--------------------
+
+4.1 Get Post Comments
+GET /posts/{post_id}/comments
+Response: 200 OK
+{
+    "data": [
+        {
+            "id": 1,
+            "content": "Comment text...",
+            "created_at": "2024-02-11T...",
+            "user": {
+                "id": 1,
+                "name": "John Doe"
+            }
+        }
+    ],
+    "links": {},
+    "meta": {}
+}
+
+4.2 Create Comment
+POST /posts/{post_id}/comments
+Request:
+{
+    "content": "New comment text..."
+}
+Response: 201 Created
+{
+    "id": 1,
+    "content": "New comment text...",
+    "created_at": "2024-02-11T...",
+    "user": {
+        "id": 1,
+        "name": "John Doe"
+    }
+}
+
+4.3 Update Comment
+PUT /comments/{id}
+Request:
+{
+    "content": "Updated comment text..."
+}
+Response: 200 OK
+{
+    // Updated comment data
+}
+
+4.4 Delete Comment
+DELETE /comments/{id}
+Response: 204 No Content
+
+5. Likes Endpoints
+-----------------
+
+5.1 Toggle Like
+POST /posts/{post_id}/toggle-like
+Response: 200 OK
+{
+    "message": "Post liked successfully",
+    "likes_count": 11
+}
+// or
+{
+    "message": "Post unliked successfully",
+    "likes_count": 10
+}
+
+5.2 Get Post Likes
+GET /posts/{post_id}/likes
+Response: 200 OK
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "John Doe"
+        }
+    ],
+    "links": {},
+    "meta": {}
+}
+
+6. Followers Endpoints
+--------------------
+
+6.1 Follow User
+POST /users/{id}/follow
+Description: Follow a user or send a follow request if their profile is private
+Rate Limit: 100 requests per minute
+Response: 200 OK
+{
+    "message": "Following user successfully",
+    "status": "accepted"
+}
+// or for private profiles
+{
+    "message": "Follow request sent successfully",
+    "status": "pending"
+}
+
+6.2 Unfollow User
+DELETE /users/{id}/unfollow
+Description: Unfollow a user or cancel a pending follow request
+Rate Limit: 100 requests per minute
+Response: 200 OK
+{
+    "message": "Unfollowed user successfully"
+}
+
+6.3 Accept Follow Request
+POST /followers/{id}/accept
+Description: Accept a pending follow request from a user
+Rate Limit: 100 requests per minute
+Response: 200 OK
+{
+    "message": "Follow request accepted successfully"
+}
+
+6.4 Reject Follow Request
+DELETE /followers/{id}/reject
+Description: Reject a pending follow request from a user
+Rate Limit: 100 requests per minute
+Response: 200 OK
+{
+    "message": "Follow request rejected successfully"
+}
+
+6.5 Get User's Followers
+GET /users/{id}/followers
+Description: Get a list of users who follow the specified user
+Rate Limit: 60 requests per minute
+Response: 200 OK
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "John Doe",
+            "email": "john@example.com",
+            "avatar_url": "http://localhost:8000/storage/avatars/user1.jpg",
+            "created_at": "2024-02-11T..."
+        }
+    ],
+    "links": {},
+    "meta": {}
+}
+
+6.6 Get User's Following
+GET /users/{id}/following
+Description: Get a list of users that the specified user follows
+Rate Limit: 60 requests per minute
+Response: 200 OK
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "Jane Doe",
+            "email": "jane@example.com",
+            "avatar_url": "http://localhost:8000/storage/avatars/user2.jpg",
+            "created_at": "2024-02-11T..."
+        }
+    ],
+    "links": {},
+    "meta": {}
+}
+
+6.7 Get Pending Follow Requests
+GET /followers/pending
+Description: Get a list of pending follow requests for the authenticated user
+Rate Limit: 60 requests per minute
+Response: 200 OK
+{
+    "data": [
+        {
+            "id": 1,
+            "name": "Alice Smith",
+            "email": "alice@example.com",
+            "avatar_url": "http://localhost:8000/storage/avatars/user3.jpg",
+            "created_at": "2024-02-11T..."
+        }
+    ]
+}
+
+Notes:
+------
+1. All protected routes require authentication via Bearer token
+2. Pagination is implemented for lists (posts, comments, likes, followers, following)
+3. Rate limiting:
+   - Read operations: 60 requests per minute
+   - Write operations: 100 requests per minute
+4. File upload limits:
+   - Images: max 5MB
+   - Supported formats: jpeg, png, jpg, gif
+5. Text limits:
+   - Post title: 3-255 characters
+   - Post content: 1-10000 characters
+   - Comment content: 1-1000 characters
+6. Private profiles:
+   - Users can set their profile to private
+   - Private profiles require follow approval
+   - Only accepted followers can see posts and follower/following lists
+   - Follow requests remain pending until accepted or rejected
+7. Private posts:
+   - Private posts are only visible to their owners
+   - They appear in my-posts endpoint
+   - They are hidden from other users in all endpoints
+   - Post owners can toggle privacy status 

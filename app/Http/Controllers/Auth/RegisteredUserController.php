@@ -69,8 +69,6 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
             'message' => 'Registration successful! Please check your email for verification link.',
             'user' => array_merge(
@@ -79,8 +77,7 @@ class RegisteredUserController extends Controller
                     'age' => $user->age,
                     'avatar_url' => $user->avatar_url
                 ]
-            ),
-            'token' => $token
+            )
         ], 201);
     }
 }
