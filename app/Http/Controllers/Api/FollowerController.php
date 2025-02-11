@@ -73,35 +73,55 @@ class FollowerController extends Controller
     /**
      * Accept a follow request
      */
-    public function acceptRequest($userId): JsonResponse
+    public function acceptRequest($id): JsonResponse
     {
-        $follower = User::findOrFail($userId);
         $currentUser = Auth::user();
 
-        $request = $currentUser->followers()
-            ->where('follower_id', $follower->id)
+        $request = Follower::where('id', $id)
+            ->where('following_id', $currentUser->id)
             ->where('status', 'pending')
             ->firstOrFail();
 
         $request->update(['status' => 'accepted']);
 
+        // Check if we want to follow back and aren't already following
+        $followerUser = $request->follower;
+        $isFollowingBack = false;
+        $followBackStatus = null;
+
+        if (request()->has('follow_back') && request()->boolean('follow_back')) {
+            // Check if we're already following this user
+            if (!$currentUser->isFollowing($followerUser) && !$currentUser->hasPendingFollowRequest($followerUser)) {
+                // Create follow back relationship
+                $followBackStatus = $followerUser->is_private ? 'pending' : 'accepted';
+                $currentUser->following()->create([
+                    'following_id' => $followerUser->id,
+                    'status' => $followBackStatus
+                ]);
+                $isFollowingBack = true;
+            }
+        }
+
         return response()->json([
-            'message' => 'Follow request accepted successfully'
+            'message' => 'Follow request accepted successfully',
+            'followed_back' => $isFollowingBack,
+            'follow_back_status' => $followBackStatus
         ]);
     }
 
     /**
      * Reject/cancel a follow request
      */
-    public function rejectRequest($userId): JsonResponse
+    public function rejectRequest($id): JsonResponse
     {
-        $follower = User::findOrFail($userId);
         $currentUser = Auth::user();
 
-        $currentUser->followers()
-            ->where('follower_id', $follower->id)
+        $request = Follower::where('id', $id)
+            ->where('following_id', $currentUser->id)
             ->where('status', 'pending')
-            ->delete();
+            ->firstOrFail();
+
+        $request->delete();
 
         return response()->json([
             'message' => 'Follow request rejected successfully'
@@ -166,5 +186,23 @@ class FollowerController extends Controller
         $requests = Auth::user()->pending_follow_requests;
 
         return response()->json($requests);
+    }
+
+    /**
+     * Check if we can follow back a user
+     */
+    public function canFollowBack($userId): JsonResponse
+    {
+        $userToCheck = User::findOrFail($userId);
+        $currentUser = Auth::user();
+
+        $canFollowBack = !$currentUser->isFollowing($userToCheck) 
+            && !$currentUser->hasPendingFollowRequest($userToCheck)
+            && $currentUser->id !== $userToCheck->id;
+
+        return response()->json([
+            'can_follow_back' => $canFollowBack,
+            'is_private' => $userToCheck->is_private
+        ]);
     }
 }

@@ -441,14 +441,30 @@ Response: 200 OK
 
 6.3 Accept Follow Request
 POST /followers/{id}/accept
-Description: Accept a pending follow request from a user
+Description: Accept a pending follow request from a user. Optionally follow back the user.
 Rate Limit: 100 requests per minute
+Request Query Parameters:
+{
+    "follow_back": true  // Optional boolean to follow back the user
+}
 Response: 200 OK
 {
-    "message": "Follow request accepted successfully"
+    "message": "Follow request accepted successfully",
+    "followed_back": true,  // Whether you followed back the user
+    "follow_back_status": "accepted"  // 'accepted' or 'pending' if followed back, null if not
 }
 
-6.4 Reject Follow Request
+6.4 Check If Can Follow Back
+GET /followers/{user_id}/can-follow-back
+Description: Check if the authenticated user can follow back another user
+Rate Limit: 60 requests per minute
+Response: 200 OK
+{
+    "can_follow_back": true,  // Whether you can follow back the user
+    "is_private": false       // Whether the target user has a private profile
+}
+
+6.5 Reject Follow Request
 DELETE /followers/{id}/reject
 Description: Reject a pending follow request from a user
 Rate Limit: 100 requests per minute
@@ -457,7 +473,7 @@ Response: 200 OK
     "message": "Follow request rejected successfully"
 }
 
-6.5 Get User's Followers
+6.6 Get User's Followers
 GET /users/{id}/followers
 Description: Get a list of users who follow the specified user
 Rate Limit: 60 requests per minute
@@ -476,7 +492,7 @@ Response: 200 OK
     "meta": {}
 }
 
-6.6 Get User's Following
+6.7 Get User's Following
 GET /users/{id}/following
 Description: Get a list of users that the specified user follows
 Rate Limit: 60 requests per minute
@@ -495,7 +511,7 @@ Response: 200 OK
     "meta": {}
 }
 
-6.7 Get Pending Follow Requests
+6.8 Get Pending Follow Requests
 GET /followers/pending
 Description: Get a list of pending follow requests for the authenticated user
 Rate Limit: 60 requests per minute

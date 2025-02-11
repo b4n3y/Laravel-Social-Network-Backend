@@ -38,20 +38,19 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verifyEm
 
 // Protected routes
 Route::middleware(['auth:sanctum'])->group(function () {
-    // User profile routes
+    // User profile routes - Read only
     Route::get('/me', function (Request $request) {
         $user = $request->user();
         return array_merge(
             $user->toArray(),
             [
                 'age' => $user->age,
-                'avatar_url' => $user->avatar_url
+                'avatar_url' => $user->avatar_url,
+                'followers_count' => $user->followers_count,
+                'following_count' => $user->following_count
             ]
         );
     })->name('profile.show');
-
-    Route::patch('/me', [ProfileController::class, 'update'])
-        ->name('profile.update');
 
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
@@ -71,6 +70,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Posts - Write operations (lower rate limit)
     Route::middleware(['throttle:100,1'])->group(function () {
+        // Profile update
+        Route::post('/me/update', [ProfileController::class, 'update'])
+            ->name('profile.update');
+
         Route::post('posts', [PostController::class, 'store']);
         Route::put('posts/{id}', [PostController::class, 'update']);
         Route::delete('posts/{id}', [PostController::class, 'destroy']);
@@ -91,13 +94,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('users/{id}/unfollow', [FollowerController::class, 'unfollow']);
         Route::post('followers/{id}/accept', [FollowerController::class, 'acceptRequest']);
         Route::delete('followers/{id}/reject', [FollowerController::class, 'rejectRequest']);
-    });
+        Route::get('followers/{id}/can-follow-back', [FollowerController::class, 'canFollowBack']);
 
-    // Followers - Read operations (higher rate limit)
-    Route::middleware(['throttle:60,1'])->group(function () {
-        Route::get('users/{id}/followers', [FollowerController::class, 'followers']);
-        Route::get('users/{id}/following', [FollowerController::class, 'following']);
-        Route::get('followers/pending', [FollowerController::class, 'pendingRequests']);
+        // Followers - Read operations (higher rate limit)
+        Route::middleware(['throttle:60,1'])->group(function () {
+            Route::get('users/{id}/followers', [FollowerController::class, 'followers']);
+            Route::get('users/{id}/following', [FollowerController::class, 'following']);
+            Route::get('followers/pending', [FollowerController::class, 'pendingRequests']);
+        });
     });
 });
 
