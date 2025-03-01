@@ -7,60 +7,113 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# Laravel Social Network Backend
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This is a fully featured social network backend built with Laravel, designed to power a modern Instagram-like application. It includes authentication, user management, real-time interactions, media uploads, notifications, and advanced search functionality.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Repository
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+[GitHub Repository](https://github.com/b4n3y/laravelbackend.git)
 
-## Learning Laravel
+## Features
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Authentication & Security
+- **Laravel Sanctum** for API authentication
+- Secure user login, registration, and password reset
+- OAuth integration for social logins (Google, Facebook, etc.)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### User Management
+- Profile management (username, bio, avatar, etc.)
+- Follow/unfollow system
+- Account privacy settings (public/private accounts)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Posts & Media
+- Create, edit, and delete posts
+- Image & video uploads with Laravel Media Library
+- Post captions, hashtags, and mentions
 
-## Laravel Sponsors
+### Engagement Features
+- Like & comment system
+- Replies to comments
+- Save/bookmark posts
+- Share posts
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Notifications
+- Real-time notifications for likes, comments, and follows
+- Push notifications using Firebase
+- Email notifications for important events
 
-### Premium Partners
+### Real-time Features
+- WebSockets & Laravel Broadcasting for live updates
+- Direct messaging (DMs) with real-time chat
+- Live video streaming integration
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Search & Discovery
+- Full-text search with Laravel Scout & Algolia
+- Trending posts & hashtag system
+- User & post recommendations
+
+### Stories & Highlights
+- Ephemeral stories that disappear after 24 hours
+- Story highlights feature for saving important stories
+- Story views tracking
+
+### Explore & Feed Algorithm
+- Personalized home feed based on follows & engagement
+- Explore page with trending content & suggested users
+
+### API & Mobile App Support
+- Fully RESTful API with proper authentication & rate limiting
+- WebSockets for real-time interactions
+- API documentation with Swagger/Postman
+
+## Installation
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/b4n3y/laravelbackend.git
+   cd laravelbackend
+   ```
+
+2. Install dependencies:
+   ```sh
+   composer install
+   ```
+
+3. Copy and set up environment variables:
+   ```sh
+   cp .env.example .env
+   ```
+   Update database and other configurations in `.env`.
+
+4. Generate application key:
+   ```sh
+   php artisan key:generate
+   ```
+
+5. Run migrations and seed data:
+   ```sh
+   php artisan migrate --seed
+   ```
+
+6. Serve the application:
+   ```sh
+   php artisan serve
+   ```
+
+## API Documentation
+
+The API is designed for front-end applications, both web and mobile. Detailed API documentation is available [here](#) (replace with actual link if using Swagger or Postman).
 
 ## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+We welcome contributions! Feel free to submit issues or create pull requests.
 
-## Code of Conduct
+## Security
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+If you find any security vulnerabilities, please report them via email instead of publicly disclosing them.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is open-source and licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
