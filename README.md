@@ -67,6 +67,42 @@ This is a fully featured social network backend built with Laravel, designed to 
 - WebSockets for real-time interactions
 - Refer to the `API_DOCUMENTATION.txt` file for detailed API documentation.
 
+## API Usage & Guidelines
+
+### Authentication
+- The API uses **Laravel Sanctum** for authentication.
+- Authentication is handled via Bearer tokens.
+- Include the `Authorization: Bearer <token>` header in all authenticated requests.
+
+### Rate Limiting
+- The API has rate limits in place to prevent abuse.
+- Standard users are limited to **X** requests per minute.
+- If the rate limit is exceeded, a `429 Too Many Requests` response is returned.
+
+### API Response Format
+- The API follows RESTful principles and returns JSON responses.
+- Example success response:
+  ```json
+  {
+    "status": "success",
+    "data": { ... }
+  }
+  ```
+- Example error response:
+  ```json
+  {
+    "status": "error",
+    "message": "Unauthorized"
+  }
+  ```
+
+### Example API Request
+```sh
+curl -X GET "https://your-api-url.com/api/posts" \
+     -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+     -H "Accept: application/json"
+```
+
 ## Installation
 
 1. Clone the repository:
@@ -116,3 +152,4 @@ If you find any security vulnerabilities, please report them via email instead o
 ## License
 
 This project is open-source and licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
