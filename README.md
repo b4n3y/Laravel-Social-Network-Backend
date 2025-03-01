@@ -65,7 +65,7 @@ This is a fully featured social network backend built with Laravel, designed to 
 ### API & Mobile App Support
 - Fully RESTful API with proper authentication & rate limiting
 - WebSockets for real-time interactions
-- API documentation with Swagger/Postman
+- Refer to the `API_DOCUMENTATION.txt` file for detailed API documentation.
 
 ## Installation
 
@@ -103,7 +103,7 @@ This is a fully featured social network backend built with Laravel, designed to 
 
 ## API Documentation
 
-The API is designed for front-end applications, both web and mobile. Detailed API documentation is available [here](#) (replace with actual link if using Swagger or Postman).
+The API is designed for front-end applications, both web and mobile. For detailed API documentation, please refer to the `API_DOCUMENTATION.txt` file included in this repository.
 
 ## Contributing
 
@@ -116,4 +116,3 @@ If you find any security vulnerabilities, please report them via email instead o
 ## License
 
 This project is open-source and licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
