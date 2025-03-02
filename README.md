@@ -10,6 +10,7 @@
 # Laravel Social Network Backend
 
 This is a fully featured social network backend built with Laravel, designed to power a modern Instagram-like application. It includes authentication, user management, real-time interactions, media uploads, notifications, and advanced search functionality.
+It also has support for s3 object storage like aws s3 buckets and digital ocean spaces.
 
 ## Repository
 
